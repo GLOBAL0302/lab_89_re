@@ -20,7 +20,6 @@ export interface IValidationError {
   name: string;
   _message: string;
 }
-
 export interface ILoginMutation {
   username: string;
   password: string;
@@ -28,4 +27,19 @@ export interface ILoginMutation {
 
 export interface IGlobalError {
   error: string;
+}
+
+export interface IPostMutation {
+  title: string;
+  description: string;
+  image: File | null;
+}
+
+export interface IPost {
+  _id: string;
+  title: string;
+  description: string;
+  user: IUser;
+  image: File | null;
+  create_at: string;
 }

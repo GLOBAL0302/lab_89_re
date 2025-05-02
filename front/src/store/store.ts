@@ -4,6 +4,7 @@ import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, pers
 import { AxiosHeaders, InternalAxiosRequestConfig } from 'axios';
 import axiosAPI from '../axiosApi.ts';
 import { usersReducer } from '../features/users/usersSlice.ts';
+import { postsReducer } from '../features/Posts/postsSlice.ts';
 
 const usersPersistConfig = {
   key: 'store:users',
@@ -13,6 +14,7 @@ const usersPersistConfig = {
 
 const rootReducer = combineReducers({
   users: persistReducer(usersPersistConfig, usersReducer),
+  posts: postsReducer,
 });
 
 export const store = configureStore({

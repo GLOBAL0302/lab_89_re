@@ -1,10 +1,8 @@
 import { HydratedDocument } from 'mongoose';
 import { IUserFields } from '../types';
-import { Error } from 'mongoose';
 import { NextFunction, Request, Response } from 'express';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
-import { error } from 'console';
-import { JWT_SECRET } from '../models/User';
+import User, { JWT_SECRET } from '../models/User';
 
 export interface RequestWithUser extends Request {
   user: HydratedDocument<IUserFields>;
@@ -14,7 +12,7 @@ const auth = async (expressReq: Request, res: Response, next: NextFunction) => {
   try {
     const req = expressReq as RequestWithUser;
 
-    const jwtToken = req.get('Authorization')?.replace('bearer', '');
+    const jwtToken = req.get('Authorization')?.replace('Bearer ', '');
 
     if (!jwtToken) {
       res.status(401).send({ error: 'No Token Provided' });
@@ -22,6 +20,16 @@ const auth = async (expressReq: Request, res: Response, next: NextFunction) => {
     }
 
     const decoded = jwt.verify(jwtToken, JWT_SECRET) as { _id: string };
+
+    const user = await User.findOne({ _id: decoded._id, token: jwtToken });
+
+    if (!user) {
+      res.status(401).send({ error: 'User not found or invalid token' });
+      return;
+    }
+
+    req.user = user;
+    next();
   } catch (e) {
     if (e instanceof TokenExpiredError) {
       res.status(401).send({ error: 'your Token is expired' });
@@ -30,3 +38,5 @@ const auth = async (expressReq: Request, res: Response, next: NextFunction) => {
     }
   }
 };
+
+export default auth;

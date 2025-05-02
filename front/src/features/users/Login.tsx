@@ -14,6 +14,8 @@ const Login = () => {
   const error = useAppSelector(selectLoginError);
   const loginLoading = useAppSelector(selectLoginLoading);
 
+  console.log(error);
+
   const [userForm, setUserForm] = useState<ILoginMutation>({
     username: '',
     password: '',
