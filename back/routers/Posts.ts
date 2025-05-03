@@ -8,6 +8,9 @@ const postsRouter = express.Router();
 
 postsRouter.get('/', async (req, res, next) => {
   try {
+    const posts = await Post.find().populate('user');
+    const sortedPost = posts.sort((a, b) => -a.create_at.localeCompare(b.create_at));
+    res.status(200).send(sortedPost);
   } catch (error) {
     if (error instanceof Error.ValidationError) {
       res.status(400).send(error);
@@ -17,7 +20,6 @@ postsRouter.get('/', async (req, res, next) => {
 });
 
 postsRouter.post('/', auth, imagesUpload.single('image'), async (req, res, next) => {
-  console.log('sd');
   try {
     const user = (req as RequestWithUser).user;
 
@@ -25,10 +27,11 @@ postsRouter.post('/', auth, imagesUpload.single('image'), async (req, res, next)
       user: user._id,
       title: req.body.title,
       description: req.body.description,
-      image: req.file ? 'images/' + req.file.filename : '',
+      image: req.file ? 'images' + req.file.filename : null,
     };
 
     const post = new Post(newPost);
+
     post.save();
     res.status(200).send({ message: 'Successfully added new post', post });
   } catch (error) {

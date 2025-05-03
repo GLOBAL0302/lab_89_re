@@ -13,3 +13,8 @@ export const addPostThunk = createAsyncThunk<void, IPostMutation>('posts/addPost
   });
   await axiosApi.post('/posts', formData);
 });
+
+export const getAllPosts = createAsyncThunk('posts/getAllPosts', async () => {
+  const { data } = await axiosApi.get('/posts');
+  return data;
+});

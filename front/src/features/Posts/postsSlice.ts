@@ -1,15 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IPost } from '../../types';
-import { addPostThunk } from './postsThunk';
+import { addPostThunk, getAllPosts } from './postsThunk';
 
 interface PostsSliceState {
-  posts: IPost[] | null;
-  postsLoading: boolean;
+  posts: IPost[];
+  postsAddLoading: boolean;
+  postsFetching: boolean;
 }
 
 const initialState: PostsSliceState = {
   posts: [],
-  postsLoading: false,
+  postsAddLoading: false,
+  postsFetching: false,
 };
 
 export const postsSlice = createSlice({
@@ -19,20 +21,33 @@ export const postsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(addPostThunk.pending, (state) => {
-        state.postsLoading = true;
+        state.postsAddLoading = true;
       })
       .addCase(addPostThunk.fulfilled, (state) => {
-        state.postsLoading = false;
+        state.postsAddLoading = false;
       })
       .addCase(addPostThunk.rejected, (state) => {
-        state.postsLoading = false;
+        state.postsAddLoading = false;
+      });
+
+    builder
+      .addCase(getAllPosts.pending, (state) => {
+        state.postsFetching = true;
+      })
+      .addCase(getAllPosts.fulfilled, (state, { payload }) => {
+        state.posts = payload;
+        state.postsFetching = false;
+      })
+      .addCase(getAllPosts.rejected, (state) => {
+        state.postsFetching = false;
       });
   },
   selectors: {
     selectPosts: (state) => state.posts,
-    postsLoading: (state) => state.postsLoading,
+    selectPostAddLoading: (state) => state.postsAddLoading,
+    selectPostsFetching: (state) => state.postsFetching,
   },
 });
 
 export const postsReducer = postsSlice.reducer;
-export const {} = postsSlice.selectors;
+export const { selectPostAddLoading, selectPosts, selectPostsFetching } = postsSlice.selectors;
