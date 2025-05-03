@@ -26,7 +26,10 @@ const Posts = () => {
       ) : (
         <Grid container gap={2}>
           {posts.map((post) => (
-            <Grid key={post._id}>
+            <Grid
+            padding={2}
+            sx={{border:"1px solid black"}} 
+            key={post._id}>
               <Grid width={200}>
                 <CardMedia
                   height="200"
